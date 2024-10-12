@@ -4,7 +4,7 @@ namespace SuperPlayer.Interfaces
 {
     public interface IPlayerCommand
     {
-        public void ComputePayloadData();
         public Task Execute(WebSocket webSocket);
+        public void ComputePayloadData();
     }
 }
