@@ -2,7 +2,8 @@
 {
     public enum PlayerResourceType
     {
-        Coins = 0,
-        Rolls = 1
+        None = 0,
+        Coins = 1,
+        Rolls = 2
     }
 }

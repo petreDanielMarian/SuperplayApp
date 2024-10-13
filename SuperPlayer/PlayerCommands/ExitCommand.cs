@@ -1,6 +1,7 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
 using GameLogic.Types;
+using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
 
@@ -9,7 +10,6 @@ namespace SuperPlayer.PlayerCommands
     class ExitCommand : IPlayerCommand
     {
         private long _clientId;
-        private string _payload = string.Empty;
 
         public ExitCommand(long clientId)
         {
@@ -18,30 +18,23 @@ namespace SuperPlayer.PlayerCommands
 
         public async Task Execute(WebSocket webSocket)
         {
-            if (_payload.IsNullOrEmpty())
+            var payload = ComputePayloadData();
+
+            if (payload.IsNullOrEmpty())
             {
                 Console.WriteLine("Payload data was not done correctly.");
+                await Task.Delay(2000);
                 return;
             }
 
-            await TransferDataHelper.SendTextOverChannel(webSocket, _payload);
+            await TransferDataHelper.SendTextOverChannel(webSocket, payload);
 
-            var response = await TransferDataHelper.RecieveTextOverChannel(webSocket);
-
-            if (response.Equals("OK"))
-            {
-                Console.WriteLine("Connection with server will be closed now...");
-                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client wants to terminate the connection", CancellationToken.None);
-            }
-
-            await Task.Delay(3000);
-
-            Environment.Exit(0);
+            // await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);     
         }
 
-        public void ComputePayloadData()
+        private string ComputePayloadData()
         {
-            _payload = $"{(int)CommandType.Exit} {_clientId}";
+            return $"{(int)CommandType.Exit} {_clientId}";
         }
     }
 }

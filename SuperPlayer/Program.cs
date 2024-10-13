@@ -1,7 +1,7 @@
 ﻿using SuperPlayer;
 using System.Net.WebSockets;
 
-internal class Program
+public class Program
 {
     private static async Task Main()
     {

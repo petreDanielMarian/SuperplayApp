@@ -5,7 +5,7 @@ using System.Net.WebSockets;
 
 namespace SuperServer.Factories
 {
-    internal class CommandHandlerFactory
+    public class CommandHandlerFactory
     {
         private WebSocket _webSocket;
         private string _payload;

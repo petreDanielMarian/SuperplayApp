@@ -2,9 +2,10 @@
 using GameLogic.Model;
 using GameLogic.Types;
 using SuperPlayer.Factories;
+using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
-using System.Text;
 
 namespace SuperPlayer
 {
@@ -15,7 +16,8 @@ namespace SuperPlayer
 
         private readonly Uri _serverUri;
         private readonly long _clientId;
-
+        
+        public static BlockingCollection<string> inputQueue = [];
 
         private static Client? _instance = null;
         public static Client GetInstance => _instance ??= new Client(8080);
@@ -34,14 +36,11 @@ namespace SuperPlayer
             {
                 await WebSocket.ConnectAsync(_serverUri, CancellationToken.None);
 
-                byte[] clientInfo = Encoding.UTF8.GetBytes(_clientId.ToString());
-                await WebSocket.SendAsync(new ArraySegment<byte>(clientInfo), WebSocketMessageType.Text, true, CancellationToken.None);
-
-                var serverInfoBuffer = new byte[100];
-                var result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(serverInfoBuffer), CancellationToken.None);
-                string serverInfo = Encoding.UTF8.GetString(serverInfoBuffer, 0, result.Count);
+                await TransferDataHelper.SendTextOverChannel(WebSocket, _clientId.ToString());
+                var serverInfo = await TransferDataHelper.RecieveTextOverChannel(WebSocket);
 
                 Console.WriteLine($"Connected to the server {serverInfo}");
+                await Task.Delay(1000);
             }
             catch (Exception ex)
             {
@@ -52,14 +51,16 @@ namespace SuperPlayer
 
         public async Task HandleServerCommunication()
         {
+            _ = Task.Run(() => HandleServerNotificaions(WebSocket));
+
             while (true)
             {
                 try
                 {
+                    await Task.Delay(4000);
                     CommandType commandType = GetCommandType();
                     IPlayerCommand playerCommand = new PlayerCommandFactory(_clientId).GetCommand(commandType);
 
-                    playerCommand.ComputePayloadData();
                     await playerCommand.Execute(WebSocket);
                 }
                 catch (WebSocketException webSocketException)
@@ -75,6 +76,15 @@ namespace SuperPlayer
             }
         }
 
+        private async Task HandleServerNotificaions(WebSocket webSocket)
+        {
+            while (true)
+            {
+                //Console.WriteLine("DEBUG: Waiting for anything from server");
+                await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);
+            }
+        }
+
         private CommandType GetCommandType()
         {
             string input = string.Empty;
@@ -83,9 +93,20 @@ namespace SuperPlayer
             {
                 string alreadyLoggedIn = IsPlayerLoggedIn() ? " - Already logged in" : string.Empty;
 
-                Console.WriteLine($"\n\nChoose your next action.\n(L)ogin{alreadyLoggedIn}\n(U)pdate Resource\n(S)end Gift\n(E)xit\n");
+                Console.Clear();
+
+                Console.WriteLine($"Client app id is {_clientId}");
+
+                if (IsPlayerLoggedIn())
+                {
+                    Console.WriteLine($"Player ID: {ActivePlayer.Id}");
+                    Console.WriteLine($"Player's Coins: {ActivePlayer.Resources[PlayerResourceType.Coins]}");
+                    Console.WriteLine($"Player's Rolls: {ActivePlayer.Resources[PlayerResourceType.Rolls]}");
+                }
+
+                Console.WriteLine($"\nChoose your next action.\n(L)ogin{alreadyLoggedIn}\n(U)pdate Resource\n(S)end Gift\n(E)xit\n");
                 Console.Write("Type only the letter inside the paranthesis: ");
-                input = ConsoleHelper.ReadLineSafelyFromConsole();
+                input = ConsoleHelper.ReadFromConsoleExternal();
             }
 
             return ToSupportedCommand(input);

@@ -4,14 +4,9 @@ using SuperPlayer.PlayerCommands;
 
 namespace SuperPlayer.Factories
 {
-    internal class PlayerCommandFactory
+    public class PlayerCommandFactory(long clientId)
     {
-        private long _clientId;
-
-        public PlayerCommandFactory(long clientId)
-        {
-            _clientId = clientId;
-        }
+        private long _clientId = clientId;
 
         public IPlayerCommand GetCommand(CommandType commandType) => commandType switch
         {

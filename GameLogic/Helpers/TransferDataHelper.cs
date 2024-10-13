@@ -10,6 +10,7 @@ namespace GameLogic.Helpers
             byte[] messageBytes = Encoding.UTF8.GetBytes(message);
             await webSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
         }
+
         public async static Task<string> RecieveTextOverChannel(WebSocket webSocket)
         {
             byte[] buffer = new byte[1024];

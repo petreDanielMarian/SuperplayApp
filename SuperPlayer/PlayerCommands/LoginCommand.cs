@@ -1,16 +1,16 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
-using GameLogic.Model;
-using GameLogic.Types;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
+using GameLogic.Messages.Requests;
+using SuperPlayer.Helpers;
+using GameLogic.Types;
 
 namespace SuperPlayer.PlayerCommands
 {
     public class LoginCommand : IPlayerCommand
     {
         private long _userDeviceId { get; init; }
-        protected string Payload { get; private set; } = string.Empty;
 
         public LoginCommand(long clientId) 
         {
@@ -19,32 +19,25 @@ namespace SuperPlayer.PlayerCommands
 
         public async Task Execute(WebSocket webSocket)
         {
-            if (Payload.IsNullOrEmpty())
+            string payload = ComputePayloadData();
+
+            if (payload.IsNullOrEmpty())
             {
                 Console.WriteLine("Payload data was not done correctly.");
+                await Task.Delay(2000);
                 return;
             }
 
-            await TransferDataHelper.SendTextOverChannel(webSocket, Payload);
+            await TransferDataHelper.SendTextOverChannel(webSocket, payload);
 
-            string playerId = await TransferDataHelper.RecieveTextOverChannel(webSocket);
+            //await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);
 
-            if (playerId.Contains('-'))
-            {
-                playerId = playerId.TrimStart('-');
-                Console.WriteLine($"You are already logged in! Player id: {playerId}");
-            }
-            else
-            {
-                Console.WriteLine($"Registration done, your player id is {playerId}");
-            }
-
-            Client.GetInstance.ActivePlayer = new Player(long.Parse(playerId));
+            //_ = Task.Run(() => HandleServerNotificaions(webSocket));
         }
 
-        public void ComputePayloadData()
+        private string ComputePayloadData()
         {
-            Payload = $"{(int)CommandType.Login} {_userDeviceId}";
+            return new LoginRequestMessage(_userDeviceId).ToString();
         }
     }
 }

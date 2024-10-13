@@ -1,6 +1,6 @@
 ﻿namespace SuperServer.Interfaces
 {
-    internal interface ICommandHandler
+    public interface ICommandHandler
     {
         Task Handle();
     }
