@@ -5,23 +5,18 @@ using System.Net.WebSockets;
 
 namespace SuperServer.Factories
 {
-    public class CommandHandlerFactory
+    /// <summary>
+    /// Factory class made to get the proper command handler
+    /// </summary>
+    /// <param name="webSocket"></param>
+    public class CommandHandlerFactory(WebSocket webSocket, string payload)
     {
-        private WebSocket _webSocket;
-        private string _payload;
-
-        public CommandHandlerFactory(WebSocket webSocket, string payload)
-        {
-            _webSocket = webSocket;
-            _payload = payload;
-        }
-
         public ICommandHandler GetCommandHandler(CommandType commandType) => commandType switch
         {
-            CommandType.Login => new LoginCommandHandler(_webSocket, _payload),
-            CommandType.UpdateResources => new UpdateResourcesCommandHandler(_webSocket, _payload),
-            CommandType.SendGift => new SendGiftCommandHandler(_webSocket, _payload),
-            CommandType.Exit => new ExitCommandHandler(_webSocket, _payload),
+            CommandType.Login => new LoginCommandHandler(webSocket, payload),
+            CommandType.UpdateResources => new UpdateResourcesCommandHandler(webSocket, payload),
+            CommandType.SendGift => new SendGiftCommandHandler(webSocket, payload),
+            CommandType.Exit => new ExitCommandHandler(webSocket, payload),
             _ => throw new NotImplementedException("More features to come! Stay tuned!"),
         };
     }

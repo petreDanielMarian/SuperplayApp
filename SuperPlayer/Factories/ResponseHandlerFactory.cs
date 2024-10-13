@@ -5,6 +5,10 @@ using System.Net.WebSockets;
 
 namespace SuperPlayer.Factories
 {
+    /// <summary>
+    /// Factory class made to get the proper response handler
+    /// </summary>
+    /// <param name="webSocket"></param>
     public class ResponseHandlerFactory(WebSocket webSocket)
     {
         public IResponseHandler GetResponseHandler(CommandType responseType) => responseType switch

@@ -1,21 +1,14 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
+using GameLogic.Messages.Requests;
 using GameLogic.Types;
-using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    public class UpdateResourcesCommand : IPlayerCommand
+    public class UpdateResourcesCommand() : IPlayerCommand
     {
-        private long _clientId;
-
-        public UpdateResourcesCommand(long clientId)
-        {
-            _clientId = clientId;
-        }
-
         public async Task Execute(WebSocket webSocket)
         {
             if (Client.GetInstance.ActivePlayer.Id > 0)
@@ -29,9 +22,7 @@ namespace SuperPlayer.PlayerCommands
                     return;
                 }
 
-                await TransferDataHelper.SendTextOverChannel(webSocket, payload);
-
-                // await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);
+                await TransferDataHelper.SendTextOverChannelAsync(webSocket, payload);
             }
             else
             {
@@ -61,7 +52,7 @@ namespace SuperPlayer.PlayerCommands
 
             } while (!int.TryParse(input, out amount));
 
-            return $"{(int)CommandType.UpdateResources} {Client.GetInstance.ActivePlayer.Id} {(int)resourceType} {amount}";
+            return new UpdateResourcesRequest(Client.GetInstance.ActivePlayer.Id, (int)resourceType, amount).ToString();
         }
     }
 }

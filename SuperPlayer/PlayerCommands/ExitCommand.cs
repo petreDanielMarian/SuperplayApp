@@ -1,21 +1,13 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
 using GameLogic.Types;
-using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    class ExitCommand : IPlayerCommand
+    class ExitCommand(long clientId) : IPlayerCommand
     {
-        private long _clientId;
-
-        public ExitCommand(long clientId)
-        {
-            _clientId = clientId;
-        }
-
         public async Task Execute(WebSocket webSocket)
         {
             var payload = ComputePayloadData();
@@ -27,14 +19,12 @@ namespace SuperPlayer.PlayerCommands
                 return;
             }
 
-            await TransferDataHelper.SendTextOverChannel(webSocket, payload);
-
-            // await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);     
+            await TransferDataHelper.SendTextOverChannelAsync(webSocket, payload);
         }
 
         private string ComputePayloadData()
         {
-            return $"{(int)CommandType.Exit} {_clientId}";
+            return $"{(int)CommandType.Exit} {clientId}";
         }
     }
 }

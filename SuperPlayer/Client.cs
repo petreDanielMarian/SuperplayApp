@@ -1,4 +1,5 @@
-﻿using GameLogic.Helpers;
+﻿using GameLogic.Extensions;
+using GameLogic.Helpers;
 using GameLogic.Model;
 using GameLogic.Types;
 using SuperPlayer.Factories;
@@ -16,8 +17,6 @@ namespace SuperPlayer
 
         private readonly Uri _serverUri;
         private readonly long _clientId;
-        
-        public static BlockingCollection<string> inputQueue = [];
 
         private static Client? _instance = null;
         public static Client GetInstance => _instance ??= new Client(8080);
@@ -26,18 +25,19 @@ namespace SuperPlayer
         {
             WebSocket = new ClientWebSocket();
             ActivePlayer = Player.EmptyPlayer;
+
             _serverUri = new Uri($"ws://localhost:{port}");
             _clientId = RandomNumbersPool.GetUniqueClientId();
         }
 
-        public async Task ConnectToServer()
+        public async Task ConnectToServerAsync()
         {
             try
             {
                 await WebSocket.ConnectAsync(_serverUri, CancellationToken.None);
 
-                await TransferDataHelper.SendTextOverChannel(WebSocket, _clientId.ToString());
-                var serverInfo = await TransferDataHelper.RecieveTextOverChannel(WebSocket);
+                await TransferDataHelper.SendTextOverChannelAsync(WebSocket, _clientId.ToString());
+                var serverInfo = await TransferDataHelper.RecieveTextOverChannelAsync(WebSocket);
 
                 Console.WriteLine($"Connected to the server {serverInfo}");
                 await Task.Delay(1000);
@@ -49,9 +49,9 @@ namespace SuperPlayer
             }
         }
 
-        public async Task HandleServerCommunication()
+        public async Task HandleServerCommunicationAsync()
         {
-            _ = Task.Run(() => HandleServerNotificaions(WebSocket));
+            _ = Task.Run(() => HandleServerNotificaionsAsync(WebSocket));
 
             while (true)
             {
@@ -76,20 +76,28 @@ namespace SuperPlayer
             }
         }
 
-        private async Task HandleServerNotificaions(WebSocket webSocket)
+        /// <summary>
+        /// Ongoing listner for messages through the websocket
+        /// </summary>
+        /// <param name="webSocket"></param>
+        /// <returns></returns>
+        private static async Task HandleServerNotificaionsAsync(WebSocket webSocket)
         {
             while (true)
             {
-                //Console.WriteLine("DEBUG: Waiting for anything from server");
                 await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);
             }
         }
 
+        /// <summary>
+        /// Choosing menu from which the user input dictates the command
+        /// </summary>
+        /// <returns>The chosed command as <see cref="CommandType"/></returns>
         private CommandType GetCommandType()
         {
             string input = string.Empty;
 
-            while (input == string.Empty || ToSupportedCommand(input) == CommandType.Retry)
+            while (input == string.Empty || input.ToSupportedCommand() == CommandType.Retry)
             {
                 string alreadyLoggedIn = IsPlayerLoggedIn() ? " - Already logged in" : string.Empty;
 
@@ -109,21 +117,9 @@ namespace SuperPlayer
                 input = ConsoleHelper.ReadFromConsoleExternal();
             }
 
-            return ToSupportedCommand(input);
+            return input.ToSupportedCommand();
         }
 
-        private CommandType ToSupportedCommand(string input) => input.ToLowerInvariant() switch
-        {
-            "l" => CommandType.Login,
-            "u" => CommandType.UpdateResources,
-            "s" => CommandType.SendGift,
-            "e" => CommandType.Exit,
-            _ => CommandType.Retry
-        };
-
-        private bool IsPlayerLoggedIn()
-        {
-            return ActivePlayer.Id > 0;
-        }
+        private bool IsPlayerLoggedIn() => ActivePlayer.Id > 0;
     }
 }

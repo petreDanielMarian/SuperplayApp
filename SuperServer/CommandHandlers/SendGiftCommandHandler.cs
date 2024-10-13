@@ -9,20 +9,11 @@ using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers
 {
-    public class SendGiftCommandHandler : ICommandHandler
+    public class SendGiftCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
     {
-        private WebSocket _webSocket;
-        private string _payload;
-
-        public SendGiftCommandHandler(WebSocket webSocket, string payload)
-        {
-            _webSocket = webSocket;
-            _payload = payload;
-        }
-
         public async Task Handle()
         {
-            string[] data = _payload.Split(' ');
+            string[] data = payload.Split(' ');
             var senderPlayerId = long.Parse(data[0]);
             var friednPlayerId = long.Parse(data[1]);
             var resourceType = (PlayerResourceType)int.Parse(data[2]);
@@ -35,24 +26,25 @@ namespace SuperServer.CommandHandlers
 
                 _ = Task.Run(() => NotifyActivePlayer(friend));
 
-                await TransferDataHelper.SendTextOverChannel(_webSocket, new SendGiftResponse(friednPlayerId, resourceType, sender.Resources[resourceType]).ToString());
+                await TransferDataHelper.SendTextOverChannelAsync(webSocket, new SendGiftResponse(friednPlayerId, (int)resourceType, sender.Resources[resourceType]).ToString());
 
             }
             catch (ArgumentNullException)
             {
                 Console.WriteLine($"Cannot update Player's {friednPlayerId} resources");
-                await TransferDataHelper.SendTextOverChannel(_webSocket, new SendGiftResponse(senderPlayerId, resourceType, amount).ToString());
+
+                await TransferDataHelper.SendTextOverChannelAsync(webSocket, new SendGiftResponse(senderPlayerId, (int)resourceType, amount).ToString());
             }
         
             await Task.CompletedTask;
         }
 
-        private async Task NotifyActivePlayer(Player player)
+        private static async Task NotifyActivePlayer(Player player)
         {
             PlayerConnection? activePlayerConnection = PlayerRepository.GetActivePlayerByPlayerId(player.Id);
             if (activePlayerConnection != null)
             {
-                await TransferDataHelper.SendTextOverChannel(activePlayerConnection.WebSocket, new GiftRecievedNotification(player.Resources[PlayerResourceType.Coins], player.Resources[PlayerResourceType.Rolls]).ToString());
+                await TransferDataHelper.SendTextOverChannelAsync(activePlayerConnection.WebSocket, new GiftRecievedNotification(player.Resources[PlayerResourceType.Coins], player.Resources[PlayerResourceType.Rolls]).ToString());
             }
         }
     }

@@ -6,28 +6,26 @@ using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers
 {
-    public class ExitCommandHandler : ICommandHandler
+    // TODO: Continue Docs
+    // TODO: clean the code
+    // TODO: make list of points to discuss
+    // Todo: Add serilog
+    // TODO: check corner-cases
+    // TODO: Check if you can be with resource <0 when gifting
+    // TODO: Try-catch everything and handle exceptions
+    public class ExitCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
     {
-        private WebSocket _webSocket;
-        private string _payload;
-
-        public ExitCommandHandler(WebSocket webSocket, string payload)
-        {
-            _webSocket = webSocket;
-            _payload = payload;
-        }
-
         public async Task Handle()
         {
-            await TransferDataHelper.SendTextOverChannel(_webSocket, new ExitResponse("OK").ToString());
+            await TransferDataHelper.SendTextOverChannelAsync(webSocket, new ExitResponse("OK").ToString());
 
             await Task.Delay(1000);
 
-            Console.WriteLine($"Closing connection with client {_payload}");
+            Console.WriteLine($"Closing connection with client {payload}");
 
-            PlayerRepository.RemoveActivePlayer(long.Parse(_payload));
+            PlayerRepository.RemoveActivePlayer(long.Parse(payload));
 
-            await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Aggreed to stop channel", CancellationToken.None);
+            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Aggreed to stop channel", CancellationToken.None);
         }
     }
 }

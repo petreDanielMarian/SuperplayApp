@@ -12,7 +12,7 @@ static async Task StartServer()
     {
         server.Start();
 
-        await server.AwaitConnections();
+        await server.AwaitConnectionsAsync();
     }
     catch (Exception ex)
     {

@@ -1,6 +1,5 @@
 ﻿using GameLogic.Model;
 using SuperPlayer.Interfaces;
-using System.Net.WebSockets;
 
 namespace SuperPlayer.ResponseHandlers
 {
@@ -11,12 +10,12 @@ namespace SuperPlayer.ResponseHandlers
             if (response.Contains('-'))
             {
                 response = response.TrimStart('-');
-                Console.WriteLine($"\nYou are already logged in! Player id: {response}");
+                Console.WriteLine($"You are already logged in! Player id: {response}");
                 await Task.Delay(3000);
             }
             else
             {
-                Console.WriteLine($"\nRegistration done, your player id is {response}");
+                Console.WriteLine($"Registration done, your player id is {response}");
                 await Task.Delay(3000);
             }
 

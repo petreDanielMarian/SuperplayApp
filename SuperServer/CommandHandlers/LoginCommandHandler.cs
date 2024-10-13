@@ -7,33 +7,24 @@ using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers
 {
-    public class LoginCommandHandler : ICommandHandler
+    public class LoginCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
     {
-        private readonly string _recievedPayload;
-        private WebSocket _webSocket;
-
-        public LoginCommandHandler(WebSocket webSocket, string payload)
-        {
-            _webSocket = webSocket;
-            _recievedPayload = payload;
-        }
-
         public async Task Handle()
         {
-            var udid = long.Parse(_recievedPayload);
+            var udid = long.Parse(payload);
             long playerId;
 
-            if (PlayerRepository.RegisteredPlayers.TryGetValue(udid, out Player? value))
+            if (PlayerRepository.GetAllRegisteredPlayers().TryGetValue(udid, out Player? value))
             {
                 playerId = -value.Id;
             }
             else
             {
                 playerId = RandomNumbersPool.GetUniquePlayerId();
-                PlayerRepository.RegisterPlayer(udid, new PlayerConnection(new Player(playerId), _webSocket));
+                PlayerRepository.RegisterPlayer(udid, new PlayerConnection(new Player(playerId), webSocket));
             }
 
-            await TransferDataHelper.SendTextOverChannel(_webSocket, new LoginResponse(playerId).ToString());
+            await TransferDataHelper.SendTextOverChannelAsync(webSocket, new LoginResponse(playerId).ToString());
         }
     }
 }

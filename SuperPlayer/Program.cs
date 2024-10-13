@@ -9,9 +9,8 @@ public class Program
 
         try
         {
-            await client.ConnectToServer();
-
-            await client.HandleServerCommunication();
+            await client.ConnectToServerAsync();
+            await client.HandleServerCommunicationAsync();
         }
         catch (Exception ex) 
         {

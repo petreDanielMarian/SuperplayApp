@@ -23,7 +23,7 @@ namespace SuperServer
             Console.WriteLine($"Server ({_serverId}) is running on {HttpListener.Prefixes.First()}");
         }
 
-        public async Task AwaitConnections()
+        public async Task AwaitConnectionsAsync()
         {
             while (true)
             {
@@ -33,7 +33,7 @@ namespace SuperServer
                     HttpListenerWebSocketContext webSocketContext = await context.AcceptWebSocketAsync(null);
                     WebSocket webSocket = webSocketContext.WebSocket;
 
-                    _ = Task.Run(() => HandleClient(webSocket));
+                    _ = Task.Run(() => HandleClientAsync(webSocket));
                 }
             }
         }
@@ -48,19 +48,16 @@ namespace SuperServer
             HttpListener.Close();
         }
 
-        private async Task HandleClient(WebSocket webSocket)
+        private async Task HandleClientAsync(WebSocket webSocket)
         {
-            // todo Handshake? make sure the client is our client (ValidateClientConnection)
-            byte[] clientInfoBuffer = new byte[50];
-            WebSocketReceiveResult clientVerification = await webSocket.ReceiveAsync(new ArraySegment<byte>(clientInfoBuffer), CancellationToken.None);
-            string clientInfo = Encoding.UTF8.GetString(clientInfoBuffer, 0, clientVerification.Count);
+            // TODO: Handshake- AcceptConnection? make sure the client is our client (ValidateClientConnection)
+            string clientInfo = await TransferDataHelper.RecieveTextOverChannelAsync(webSocket);
             Console.WriteLine($"Connection request recieved from client {clientInfo}");
 
-            // todo Check client integrity (recieve clientId, and a number)
+            // TODO: Check client integrity (recieve clientId, and a number)
             await Task.Delay(1000);
 
-            byte[] serverInfo = Encoding.UTF8.GetBytes(_serverId.ToString());
-            await webSocket.SendAsync(new ArraySegment<byte>(serverInfo), WebSocketMessageType.Text, true, CancellationToken.None);
+            await TransferDataHelper.SendTextOverChannelAsync(webSocket, _serverId.ToString());
 
             Console.WriteLine($"Connection established with client {clientInfo}");
             // end handshake
@@ -68,10 +65,7 @@ namespace SuperServer
             // start exchanging messages
             while (true)
             {
-                byte[] buffer = new byte[1024];
-                WebSocketReceiveResult webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
-                string response = Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
+                string response = await TransferDataHelper.RecieveTextOverChannelAsync(webSocket);
 
                 var commandType = (CommandType)int.Parse(response.Split()[0]);
                 var payload = string.Join(" ", response.Split().Skip(1));

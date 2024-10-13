@@ -1,21 +1,14 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
+using GameLogic.Messages.Requests;
 using GameLogic.Types;
-using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    public class SendGiftCommand : IPlayerCommand
+    public class SendGiftCommand() : IPlayerCommand
     {
-        private long _clientId;
-
-        public SendGiftCommand(long clientId)
-        {
-            _clientId = clientId;
-        }
-
         public async Task Execute(WebSocket webSocket)
         {
             if (Client.GetInstance.ActivePlayer.Id > 0)
@@ -29,9 +22,7 @@ namespace SuperPlayer.PlayerCommands
                     return;
                 }
 
-                await TransferDataHelper.SendTextOverChannel(webSocket, payload);
-
-                // await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);
+                await TransferDataHelper.SendTextOverChannelAsync(webSocket, payload);
             }
             else
             {
@@ -67,9 +58,9 @@ namespace SuperPlayer.PlayerCommands
                 Console.Write($"\nPlease enter the amount of {resourceType.ToString()} you wish to send.\nMust be lower than {Client.GetInstance.ActivePlayer.Resources[resourceType]}: ");
                 input = ConsoleHelper.ReadLineSafelyFromConsole();
 
-            } while (!int.TryParse(input, out amount));
+            } while (!TryValidateSentAmount(input, resourceType, out amount));
 
-            return $"{(int)CommandType.SendGift} {Client.GetInstance.ActivePlayer.Id} {playerId} {(int)resourceType} {amount}";
+            return new SendGiftRequest(Client.GetInstance.ActivePlayer.Id, playerId, (int)resourceType, amount).ToString();
         }
 
         private bool TryValidatePlayerId(string input, out long playerId)

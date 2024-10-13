@@ -3,20 +3,11 @@ using GameLogic.Helpers;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
 using GameLogic.Messages.Requests;
-using SuperPlayer.Helpers;
-using GameLogic.Types;
 
 namespace SuperPlayer.PlayerCommands
 {
-    public class LoginCommand : IPlayerCommand
+    public class LoginCommand(long clientId) : IPlayerCommand
     {
-        private long _userDeviceId { get; init; }
-
-        public LoginCommand(long clientId) 
-        {
-            _userDeviceId = clientId;
-        }
-
         public async Task Execute(WebSocket webSocket)
         {
             string payload = ComputePayloadData();
@@ -28,16 +19,12 @@ namespace SuperPlayer.PlayerCommands
                 return;
             }
 
-            await TransferDataHelper.SendTextOverChannel(webSocket, payload);
-
-            //await RecieveDataFromServerHelper.RecieveServerMessageOverChannel(webSocket);
-
-            //_ = Task.Run(() => HandleServerNotificaions(webSocket));
+            await TransferDataHelper.SendTextOverChannelAsync(webSocket, payload);
         }
 
         private string ComputePayloadData()
         {
-            return new LoginRequestMessage(_userDeviceId).ToString();
+            return new LoginRequestMessage(clientId).ToString();
         }
     }
 }

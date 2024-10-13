@@ -12,7 +12,7 @@ namespace GameLogic.Model
         {
             Id = id;
 
-            // Initialize resource pool
+            // Initialize resources
             Resources = new Dictionary<PlayerResourceType, int>
             {
                 { PlayerResourceType.Coins, 0 },

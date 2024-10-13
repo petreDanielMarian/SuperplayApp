@@ -4,16 +4,18 @@ using SuperPlayer.PlayerCommands;
 
 namespace SuperPlayer.Factories
 {
+    /// <summary>
+    /// Factory class to get the appropiate command runner
+    /// </summary>
+    /// <param name="clientId">The client id</param>
     public class PlayerCommandFactory(long clientId)
     {
-        private long _clientId = clientId;
-
         public IPlayerCommand GetCommand(CommandType commandType) => commandType switch
         {
-            CommandType.Login => new LoginCommand(_clientId),
-            CommandType.UpdateResources => new UpdateResourcesCommand(_clientId),
-            CommandType.SendGift => new SendGiftCommand(_clientId),
-            CommandType.Exit => new ExitCommand(_clientId),
+            CommandType.Login => new LoginCommand(clientId),
+            CommandType.UpdateResources => new UpdateResourcesCommand(),
+            CommandType.SendGift => new SendGiftCommand(),
+            CommandType.Exit => new ExitCommand(clientId),
             _ => throw new NotImplementedException("More features to come! Stay tuned!"),
         };
     }

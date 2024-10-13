@@ -2,11 +2,11 @@
 
 namespace GameLogic.Messages.Responses
 {
-    public class UpdateResourcesResponse(PlayerResourceType resourceType, int amount) : BaseResponse
+    public class UpdateResourcesResponse(int resourceType, int amount) : BaseResponse
     {
         public override string ToString()
         {
-            return $"{(int)MessageType.ServerCommunication} {(int)CommandType.UpdateResources} {(int)resourceType} {amount}";
+            return $"{(int)MessageType.ServerCommunication} {(int)CommandType.UpdateResources} {resourceType} {amount}";
         }
     }
 }
