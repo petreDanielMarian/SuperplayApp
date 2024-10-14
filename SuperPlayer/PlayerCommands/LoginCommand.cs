@@ -24,7 +24,7 @@ namespace SuperPlayer.PlayerCommands
 
         private string ComputePayloadData()
         {
-            return new LoginRequestMessage(clientId).ToString();
+            return new LoginRequest(clientId).ToString();
         }
     }
 }

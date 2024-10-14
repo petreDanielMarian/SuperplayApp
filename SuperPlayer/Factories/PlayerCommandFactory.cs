@@ -13,8 +13,8 @@ namespace SuperPlayer.Factories
         public IPlayerCommand GetCommand(CommandType commandType) => commandType switch
         {
             CommandType.Login => new LoginCommand(clientId),
-            CommandType.UpdateResources => new UpdateResourcesCommand(),
-            CommandType.SendGift => new SendGiftCommand(),
+            CommandType.UpdateResources => new UpdateResourcesCommand(clientId),
+            CommandType.SendGift => new SendGiftCommand(clientId),
             CommandType.Exit => new ExitCommand(clientId),
             _ => throw new NotImplementedException("More features to come! Stay tuned!"),
         };

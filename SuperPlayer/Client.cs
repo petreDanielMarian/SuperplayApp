@@ -1,12 +1,14 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
+using GameLogic.Messages.Requests;
 using GameLogic.Model;
 using GameLogic.Types;
 using SuperPlayer.Factories;
 using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
-using System.Collections.Concurrent;
+using System.IO;
 using System.Net.WebSockets;
+using System.Security.Cryptography;
 
 namespace SuperPlayer
 {
@@ -36,11 +38,18 @@ namespace SuperPlayer
             {
                 await WebSocket.ConnectAsync(_serverUri, CancellationToken.None);
 
-                await TransferDataHelper.SendTextOverChannelAsync(WebSocket, _clientId.ToString());
+                string encryptedClientId = EncryptClientId(_clientId.ToString());
+
+                await TransferDataHelper.SendTextOverChannelAsync(WebSocket, new ConnectionRequest(_clientId.ToString(), encryptedClientId).ToString());
                 var serverInfo = await TransferDataHelper.RecieveTextOverChannelAsync(WebSocket);
 
+                if (serverInfo.Equals("REJECTED"))
+                {
+                    throw new Exception("Connection was rejected!");
+                }
+
                 Console.WriteLine($"Connected to the server {serverInfo}");
-                await Task.Delay(1000);
+                await Task.Delay(500);
             }
             catch (Exception ex)
             {
@@ -121,5 +130,35 @@ namespace SuperPlayer
         }
 
         private bool IsPlayerLoggedIn() => ActivePlayer.Id > 0;
+
+        private string EncryptClientId(string clientId)
+        {
+            string? key; 
+            var memoryStream = new MemoryStream();
+
+            using (var reader = new StreamReader("SuperKey.snk"))
+            {
+                key = reader.ReadLine();
+            }
+
+            if (key != null)
+            {
+                Guid encryptionKey = Guid.Parse(key);
+
+                using Aes aes = Aes.Create();
+                aes.Key = encryptionKey.ToByteArray();
+                aes.GenerateIV();
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                memoryStream.Write(aes.IV, 0, aes.IV.Length);
+
+                using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+                using var streamWriter = new StreamWriter(cryptoStream);
+                
+                streamWriter.Write(clientId);
+            }
+
+            return Convert.ToBase64String(memoryStream.ToArray());
+        }
     }
 }

@@ -11,4 +11,10 @@
     <ProjectReference Include="..\GameLogic\GameLogic.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SuperKey.snk">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -4,7 +4,6 @@ using SuperPlayer.Factories;
 using SuperPlayer.Interfaces;
 using SuperPlayer.ServerNotificationHandlers;
 using System.Net.WebSockets;
-using System.Text;
 
 namespace SuperPlayer.Helpers
 {

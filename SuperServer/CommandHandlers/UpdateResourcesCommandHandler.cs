@@ -8,6 +8,11 @@ using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers
 {
+    /// <summary>
+    /// Handles UpdateResourcesCommand and returns resource type and the amount
+    /// </summary>
+    /// <param name="webSocket"></param>
+    /// <param name="payload">Contains player id, resource type and resource amount</param>
     public class UpdateResourcesCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
     {
         public async Task Handle()
@@ -19,6 +24,7 @@ namespace SuperServer.CommandHandlers
 
             try
             {
+                Console.WriteLine($"Player {playerId} updated his {resourceType} with {amount}.");
                 Player sender = PlayerRepository.AddPlayerResources(playerId, resourceType, amount);
 
                 await TransferDataHelper.SendTextOverChannelAsync(webSocket, new UpdateResourcesResponse((int)resourceType, sender.Resources[resourceType]).ToString());
@@ -26,6 +32,7 @@ namespace SuperServer.CommandHandlers
             catch (ArgumentNullException)
             {
                 Console.WriteLine($"Cannot update {playerId} resources");
+                resourceType = PlayerResourceType.None;
 
                 await TransferDataHelper.SendTextOverChannelAsync(webSocket, new UpdateResourcesResponse((int)resourceType, 0).ToString());
             }

@@ -2,11 +2,11 @@
 
 namespace GameLogic.Messages.Requests
 {
-    public class ExitRequest
+    public class ExitRequest(long clientId)
     {
         public override string ToString()
         {
-            return $"{(int)CommandType.Exit}";
+            return $"{(int)CommandType.Exit} {clientId} {clientId} ";
         }
     }
 }

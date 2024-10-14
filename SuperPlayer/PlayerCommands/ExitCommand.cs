@@ -1,5 +1,6 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
+using GameLogic.Messages.Requests;
 using GameLogic.Types;
 using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
@@ -24,7 +25,7 @@ namespace SuperPlayer.PlayerCommands
 
         private string ComputePayloadData()
         {
-            return $"{(int)CommandType.Exit} {clientId}";
+            return new ExitRequest(clientId).ToString();
         }
     }
 }

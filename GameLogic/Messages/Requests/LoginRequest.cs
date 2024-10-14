@@ -2,11 +2,11 @@
 
 namespace GameLogic.Messages.Requests
 {
-    public class LoginRequestMessage(long uuid)
+    public class LoginRequest(long uuid)
     {
         public override string ToString()
         {
-            return $"{(int)CommandType.Login} {uuid}";
+            return $"{(int)CommandType.Login} {uuid} {uuid}";
         }
     }
 }

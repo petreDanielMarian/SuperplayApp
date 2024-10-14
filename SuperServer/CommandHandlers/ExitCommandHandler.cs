@@ -6,26 +6,34 @@ using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers
 {
-    // TODO: Continue Docs
-    // TODO: clean the code
-    // TODO: make list of points to discuss
     // Todo: Add serilog
     // TODO: check corner-cases
-    // TODO: Check if you can be with resource <0 when gifting
-    // TODO: Try-catch everything and handle exceptions
+    /// <summary>
+    /// When server sends Exit command, server sends and "OK" and proceeds to close the connection
+    /// </summary>
+    /// <param name="webSocket"></param>
+    /// <param name="payload">Contains the client id</param>
     public class ExitCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
     {
         public async Task Handle()
         {
-            await TransferDataHelper.SendTextOverChannelAsync(webSocket, new ExitResponse("OK").ToString());
+            try
+            {
+                await TransferDataHelper.SendTextOverChannelAsync(webSocket, new ExitResponse("OK").ToString());
 
-            await Task.Delay(1000);
+                await Task.Delay(500);
 
-            Console.WriteLine($"Closing connection with client {payload}");
+                Console.WriteLine($"Closing connection with client {payload}");
 
-            PlayerRepository.RemoveActivePlayer(long.Parse(payload));
+                PlayerRepository.RemoveActivePlayer(long.Parse(payload));
 
-            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Aggreed to stop channel", CancellationToken.None);
+                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Aggreed to stop channel", CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exit command failed!" + ex.Message);
+                throw;
+            }
         }
     }
 }
