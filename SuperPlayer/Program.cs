@@ -1,7 +1,5 @@
-﻿using Polly.Retry;
-using Serilog;
+﻿using Serilog;
 using SuperPlayer;
-using System.Net.WebSockets;
 
 public class Program
 {
