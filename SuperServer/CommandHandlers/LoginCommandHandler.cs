@@ -1,5 +1,6 @@
 ﻿using GameLogic.Helpers;
 using GameLogic.Model;
+using Serilog;
 using SuperServer.Database;
 using SuperServer.Interfaces;
 using SuperServer.Messages.Responses;
@@ -22,12 +23,12 @@ namespace SuperServer.CommandHandlers
             {
                 if (PlayerRepository.GetAllRegisteredPlayers().TryGetValue(udid, out Player? value))
                 {
-                    Console.WriteLine($"Registering client {udid}");
+                    Log.Information($"Registering client {udid}");
                     playerId = -value.Id;
                 }
                 else
                 {
-                    Console.WriteLine($"Logging client {udid}");
+                    Log.Information($"Logging client {udid}");
                     playerId = RandomNumbersPool.GetUniquePlayerId();
                     PlayerRepository.RegisterPlayer(udid, new PlayerConnection(new Player(playerId), webSocket));
                 }
@@ -36,7 +37,7 @@ namespace SuperServer.CommandHandlers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Communication error!" + e.ToString());
+                Log.Error("Communication error!" + e.ToString());
             }
             
         }

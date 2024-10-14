@@ -1,4 +1,5 @@
 ﻿using GameLogic.Model;
+using Serilog;
 using SuperPlayer.Interfaces;
 
 namespace SuperPlayer.ResponseHandlers
@@ -7,6 +8,8 @@ namespace SuperPlayer.ResponseHandlers
     {
         public async Task HandleResponse(string response)
         {
+            Log.Information($"Login response: {response}");
+
             if (response.Contains('-'))
             {
                 response = response.TrimStart('-');

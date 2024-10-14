@@ -2,6 +2,9 @@
 
 namespace GameLogic.Model
 {
+    /// <summary>
+    /// Player model that has an id and a list of resources
+    /// </summary>
     public class Player
     {
         public long Id { get; init; }

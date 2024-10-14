@@ -1,6 +1,7 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
 using GameLogic.Types;
+using Serilog;
 using SuperPlayer.Interfaces;
 using SuperPlayer.Messages.Requests;
 using System.Net.WebSockets;
@@ -52,7 +53,10 @@ namespace SuperPlayer.PlayerCommands
 
             } while (!int.TryParse(input, out amount));
 
-            return new UpdateResourcesRequest(clientId, Client.GetInstance.ActivePlayer.Id, (int)resourceType, amount).ToString();
+            var request = new UpdateResourcesRequest(clientId, Client.GetInstance.ActivePlayer.Id, (int)resourceType, amount).ToString();
+            Log.Information(request);
+
+            return request;
         }
     }
 }

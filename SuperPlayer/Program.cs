@@ -1,10 +1,16 @@
-﻿using SuperPlayer;
+﻿using Serilog;
+using SuperPlayer;
 using System.Net.WebSockets;
 
 public class Program
 {
     private static async Task Main()
     {
+        // I chose to log only to file on client side so the ui is still working through console
+        Log.Logger = new LoggerConfiguration()
+                .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+        
         var client = Client.GetInstance;
 
         try
@@ -14,7 +20,7 @@ public class Program
         }
         catch (Exception ex) 
         {
-            Console.WriteLine(ex.Message);
+            Log.Error(ex.Message);
         }
         finally
         {

@@ -1,5 +1,6 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
+using Serilog;
 using SuperPlayer.Interfaces;
 using SuperPlayer.Messages.Requests;
 using System.Net.WebSockets;
@@ -24,7 +25,10 @@ namespace SuperPlayer.PlayerCommands
 
         private string ComputePayloadData()
         {
-            return new LoginRequest(clientId).ToString();
+            var request = new LoginRequest(clientId).ToString();
+            Log.Information(request);
+
+            return request;
         }
     }
 }

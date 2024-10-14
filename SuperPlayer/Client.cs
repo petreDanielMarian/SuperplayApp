@@ -2,6 +2,7 @@
 using GameLogic.Helpers;
 using GameLogic.Model;
 using GameLogic.Types;
+using Serilog;
 using SuperPlayer.Factories;
 using SuperPlayer.Helpers;
 using SuperPlayer.Interfaces;
@@ -47,12 +48,13 @@ namespace SuperPlayer
                     throw new Exception("Connection was rejected!");
                 }
 
+                Log.Information($"Connected to the server {serverInfo}");
                 Console.WriteLine($"Connected to the server {serverInfo}");
                 await Task.Delay(500);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Log.Error(ex.Message);
                 throw;
             }
         }
@@ -69,16 +71,18 @@ namespace SuperPlayer
                     CommandType commandType = GetCommandType();
                     IPlayerCommand playerCommand = new PlayerCommandFactory(_clientId).GetCommand(commandType);
 
+                    Log.Information($"executing commandType: {commandType}");
+
                     await playerCommand.Execute(WebSocket);
                 }
                 catch (WebSocketException webSocketException)
                 {
-                    Console.WriteLine($"Server shut down before finishing the close handshake: {webSocketException.Message}");
+                    Log.Error($"Server shut down before finishing the close handshake: {webSocketException.Message}");
                     throw;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Log.Error(ex.Message);
                     throw;
                 }
             }

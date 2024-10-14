@@ -1,4 +1,5 @@
-﻿using SuperPlayer.Interfaces;
+﻿using Serilog;
+using SuperPlayer.Interfaces;
 using System.Net.WebSockets;
 
 namespace SuperPlayer.ResponseHandlers
@@ -7,6 +8,8 @@ namespace SuperPlayer.ResponseHandlers
     {
         public async Task HandleResponse(string response)
         {
+            Log.Information($"Exit response: {response}");
+
             if (response.Equals("OK"))
             {
                 Console.WriteLine("\nConnection with server will be closed now...");

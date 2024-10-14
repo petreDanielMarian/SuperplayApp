@@ -1,6 +1,7 @@
 ﻿using GameLogic.Helpers;
 using GameLogic.Model;
 using GameLogic.Types;
+using Serilog;
 using SuperServer.Database;
 using SuperServer.Interfaces;
 using SuperServer.Messages.Notifications;
@@ -26,7 +27,7 @@ namespace SuperServer.CommandHandlers
 
             try 
             {
-                Console.WriteLine($"Player {senderPlayerId} sends to player {recieverPlayerId} {amount} {resourceType}");
+                Log.Information($"Player {senderPlayerId} sends to player {recieverPlayerId} {amount} {resourceType}");
 
                 Player friend = PlayerRepository.AddPlayerResources(recieverPlayerId, resourceType, amount);
                 Player sender = PlayerRepository.RemovePlayerResources(senderPlayerId, resourceType, amount);
@@ -38,7 +39,7 @@ namespace SuperServer.CommandHandlers
             }
             catch (ArgumentNullException)
             {
-                Console.WriteLine($"Cannot update Player's {recieverPlayerId} resources");
+                Log.Information($"Cannot update Player's {recieverPlayerId} resources");
 
                 await TransferDataHelper.SendTextOverChannelAsync(webSocket, new SendGiftResponse(senderPlayerId, (int)resourceType, amount).ToString());
             }

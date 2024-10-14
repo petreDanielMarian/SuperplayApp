@@ -1,11 +1,15 @@
-﻿using SuperServer;
-
-Console.WriteLine("Hello, World!");
+﻿using Serilog;
+using SuperServer;
 
 await StartServer();
 
 static async Task StartServer()
 {
+    Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
     Server server = new Server();
 
     try
@@ -16,7 +20,7 @@ static async Task StartServer()
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.ToString());
+        Log.Error(ex, ex.ToString());
     }
     finally
     {

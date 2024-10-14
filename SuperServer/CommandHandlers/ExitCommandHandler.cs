@@ -1,4 +1,5 @@
 ﻿using GameLogic.Helpers;
+using Serilog;
 using SuperServer.Database;
 using SuperServer.Interfaces;
 using SuperServer.Messages.Responses;
@@ -6,8 +7,6 @@ using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers
 {
-    // Todo: Add serilog
-    // TODO: check corner-cases
     /// <summary>
     /// When server sends Exit command, server sends and "OK" and proceeds to close the connection
     /// </summary>
@@ -23,7 +22,7 @@ namespace SuperServer.CommandHandlers
 
                 await Task.Delay(500);
 
-                Console.WriteLine($"Closing connection with client {payload}");
+                Log.Information($"Closing connection with client {payload}");
 
                 PlayerRepository.RemoveActivePlayer(long.Parse(payload));
 
@@ -31,7 +30,7 @@ namespace SuperServer.CommandHandlers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exit command failed!" + ex.Message);
+                Log.Error("Exit command failed!" + ex.Message);
                 throw;
             }
         }

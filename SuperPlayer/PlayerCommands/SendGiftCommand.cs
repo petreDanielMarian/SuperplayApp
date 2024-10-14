@@ -1,6 +1,7 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
 using GameLogic.Types;
+using Serilog;
 using SuperPlayer.Interfaces;
 using SuperPlayer.Messages.Requests;
 using System.Net.WebSockets;
@@ -60,7 +61,10 @@ namespace SuperPlayer.PlayerCommands
 
             } while (!TryValidateSentAmount(input, resourceType, out amount));
 
-            return new SendGiftRequest(clientId, Client.GetInstance.ActivePlayer.Id, playerId, (int)resourceType, amount).ToString();
+            var request = new SendGiftRequest(clientId, Client.GetInstance.ActivePlayer.Id, playerId, (int)resourceType, amount).ToString();
+            Log.Information(request);
+
+            return request;
         }
 
         private bool TryValidatePlayerId(string input, out long playerId)

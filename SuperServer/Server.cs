@@ -1,5 +1,6 @@
 ﻿using GameLogic.Helpers;
 using GameLogic.Types;
+using Serilog;
 using SuperServer.Factories;
 using SuperServer.Interfaces;
 using SuperServer.Messages.Responses;
@@ -21,8 +22,8 @@ namespace SuperServer
             HttpListener = new HttpListener();
             HttpListener.Prefixes.Add("http://localhost:8080/");
 
-            Console.WriteLine($"Server ({_serverId}) is running on {HttpListener.Prefixes.First()}");
-            Console.WriteLine($"Please be patient with the client response time (delays are added to read the texts)");
+            Log.Information($"Server ({_serverId}) is running on {HttpListener.Prefixes.First()}");
+            Log.Warning($"Please be patient with the client response time (delays are added to read the texts)");
         }
 
         public async Task AwaitConnectionsAsync()
@@ -42,12 +43,12 @@ namespace SuperServer
                 }
                 catch (WebSocketException wsEx)
                 {
-                    Console.WriteLine("Connection issue" + wsEx.ToString());
+                    Log.Error("Connection issue" + wsEx.ToString());
                     throw;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Log.Error(ex.ToString());
                     throw;
                 }
             }
@@ -61,7 +62,7 @@ namespace SuperServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Log.Fatal(ex.ToString());
                 throw;
             }
         }
@@ -74,7 +75,7 @@ namespace SuperServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Log.Fatal(ex.ToString());
                 throw;
             }
 }
@@ -100,7 +101,7 @@ namespace SuperServer
 
                 ICommandHandler handler = new CommandHandlerFactory(webSocket, payload).GetCommandHandler(commandType);
 
-                Console.WriteLine($"Recived and handling {commandType} from client {clientId}");
+                Log.Information($"Recived and handling {commandType} from client {clientId}");
 
                 _ = Task.Run(handler.Handle);
             }
@@ -110,7 +111,7 @@ namespace SuperServer
         {
             string clientInfo = await TransferDataHelper.RecieveTextOverChannelAsync(webSocket);
 
-            Console.WriteLine($"Connection request recieved from client {clientInfo}");
+            Log.Information($"Connection request recieved from client {clientInfo}");
 
             string[] tokens = clientInfo.Split(" ");
             string clientId = tokens[0];
@@ -123,13 +124,13 @@ namespace SuperServer
             {
                 await TransferDataHelper.SendTextOverChannelAsync(webSocket, new ConnectionResponse(_serverId.ToString()).ToString());
 
-                Console.WriteLine($"Connection established with client {clientId}");
+                Log.Information($"Connection established with client {clientId}");
             }
             else
             {
                 await TransferDataHelper.SendTextOverChannelAsync(webSocket, new ConnectionResponse("REJECTED").ToString());
 
-                Console.WriteLine($"Connection refused with suspicious client {clientId}");
+                Log.Information($"Connection refused with suspicious client {clientId}");
             }
         }
 

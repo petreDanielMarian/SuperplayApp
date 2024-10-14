@@ -21,7 +21,6 @@ namespace SuperPlayer.Helpers
             // get response handler
             string[] tokens = response.Split(" ");
             MessageType messageType = (MessageType)int.Parse(tokens[0]);
-            //Console.WriteLine($"DEBUG: Handling {messageType}");
 
             IResponseHandler responseHandler;
             if (messageType == MessageType.ServerCommunication)

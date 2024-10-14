@@ -1,4 +1,5 @@
 ﻿using GameLogic.Types;
+using Serilog;
 using SuperPlayer.Interfaces;
 
 namespace SuperPlayer.ResponseHandlers
@@ -7,6 +8,8 @@ namespace SuperPlayer.ResponseHandlers
     {
         public async Task HandleResponse(string response)
         {
+            Log.Information($"SendGift response: {response}");
+
             string[] tokens = response.Split(" ");
             long playerId = long.Parse(tokens[0]);
             PlayerResourceType resourceType = (PlayerResourceType)int.Parse(tokens[1]);
