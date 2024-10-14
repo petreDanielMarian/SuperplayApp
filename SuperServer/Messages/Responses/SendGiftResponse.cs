@@ -1,6 +1,6 @@
 ﻿using GameLogic.Types;
 
-namespace GameLogic.Messages.Responses
+namespace SuperServer.Messages.Responses
 {
     public class SendGiftResponse(long playerId, int resourceType, int amount) : BaseResponse
     {

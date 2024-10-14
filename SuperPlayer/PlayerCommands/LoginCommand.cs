@@ -1,8 +1,8 @@
 ﻿using GameLogic.Extensions;
 using GameLogic.Helpers;
 using SuperPlayer.Interfaces;
+using SuperPlayer.Messages.Requests;
 using System.Net.WebSockets;
-using GameLogic.Messages.Requests;
 
 namespace SuperPlayer.PlayerCommands
 {

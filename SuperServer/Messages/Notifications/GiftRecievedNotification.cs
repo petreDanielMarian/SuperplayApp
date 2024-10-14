@@ -1,7 +1,7 @@
-﻿using GameLogic.Messages.Responses;
-using GameLogic.Types;
+﻿using GameLogic.Types;
+using SuperServer.Messages.Responses;
 
-namespace GameLogic.Messages.Notifications
+namespace SuperServer.Messages.Notifications
 {
     /// <summary>
     /// Response made to be sent as notification to the gifted player (if online)

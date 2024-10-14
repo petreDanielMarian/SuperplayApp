@@ -1,10 +1,10 @@
 ﻿using GameLogic.Helpers;
-using GameLogic.Messages.Notifications;
-using GameLogic.Messages.Responses;
 using GameLogic.Model;
 using GameLogic.Types;
 using SuperServer.Database;
 using SuperServer.Interfaces;
+using SuperServer.Messages.Notifications;
+using SuperServer.Messages.Responses;
 using System.Net.WebSockets;
 
 namespace SuperServer.CommandHandlers

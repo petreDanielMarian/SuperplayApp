@@ -1,4 +1,4 @@
-﻿namespace GameLogic.Messages.Responses
+﻿namespace SuperServer.Messages.Responses
 {
     public class ConnectionResponse(string response)
     {

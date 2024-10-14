@@ -1,6 +1,6 @@
 ﻿using GameLogic.Types;
 
-namespace GameLogic.Messages.Requests
+namespace SuperPlayer.Messages.Requests
 {
     public class UpdateResourcesRequest(long clientId, long playerId, int resourceType, int amount)
     {

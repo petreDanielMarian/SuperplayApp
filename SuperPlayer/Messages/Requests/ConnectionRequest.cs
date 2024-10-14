@@ -1,4 +1,4 @@
-﻿namespace GameLogic.Messages.Requests
+﻿namespace SuperPlayer.Messages.Requests
 {
     public class ConnectionRequest(string clientId, string encryptedClientId)
     {

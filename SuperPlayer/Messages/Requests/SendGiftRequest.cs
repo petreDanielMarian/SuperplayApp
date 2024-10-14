@@ -1,6 +1,6 @@
 ﻿using GameLogic.Types;
 
-namespace GameLogic.Messages.Requests
+namespace SuperPlayer.Messages.Requests
 {
     public class SendGiftRequest(long clientId, long senderPlayerId, long recieverPlayerId, int resourceType, int amount)
     {
