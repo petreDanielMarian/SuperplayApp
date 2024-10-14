@@ -10,13 +10,16 @@ namespace SuperPlayer.ServerNotificationHandlers
         {
             string[] tokens = response.Split(" ");
 
-            Client.GetInstance.ActivePlayer.Resources[PlayerResourceType.Coins] = int.Parse(tokens[0]);
-            Client.GetInstance.ActivePlayer.Resources[PlayerResourceType.Rolls] = int.Parse(tokens[1]);
-
-            await Task.Delay(1000);
+            // TODO: Not sure lock is really needed, have to check code
+            lock (Client.GetInstance.ActivePlayer)
+            {
+                Client.GetInstance.ActivePlayer.Resources[PlayerResourceType.Coins] = int.Parse(tokens[0]);
+                Client.GetInstance.ActivePlayer.Resources[PlayerResourceType.Rolls] = int.Parse(tokens[1]);
+            }
             
-            // In order to display a log, I am updating the view.
+            // Updating the view.
             ConsoleHelper.ExternalInput = $"You recieved {tokens[0]} Coins and {tokens[1]} Rolls.";
+            await Task.Delay(1500);
             ConsoleHelper.HasExternalInput = true;
         }
     }
