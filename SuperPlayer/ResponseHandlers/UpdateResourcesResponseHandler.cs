@@ -11,19 +11,20 @@ namespace SuperPlayer.ResponseHandlers
             Log.Information($"UpdateResources response: {response}");
 
             string[] tokens = response.Split(" ");
-            PlayerResourceType resourceType = (PlayerResourceType)int.Parse(tokens[0]);
-            int amount = int.Parse(tokens[1]);
+            var resourceType = (PlayerResourceType)int.Parse(tokens[0]);
+            int newBalance = int.Parse(tokens[1]);
 
+            // Faulty update on server side handling
             if(resourceType == PlayerResourceType.None)
             {
                 Console.WriteLine("Update failed");
             }
             else
             {
-                Client.GetInstance.ActivePlayer.Resources[resourceType] = amount;
+                Client.GetInstance.ActivePlayer.Resources[resourceType] = newBalance;
             }
 
-            Console.WriteLine($"\nYour {resourceType} count is now {Client.GetInstance.ActivePlayer.Resources[resourceType]} ");
+            Console.WriteLine($"\nYour {resourceType} count is now {Client.GetInstance.ActivePlayer.Resources[resourceType]}");
             await Task.Delay(3000);
         }
     }

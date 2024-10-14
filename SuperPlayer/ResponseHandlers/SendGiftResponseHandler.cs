@@ -17,7 +17,7 @@ namespace SuperPlayer.ResponseHandlers
 
             if (Client.GetInstance.ActivePlayer.Id == playerId)
             {
-                Console.WriteLine($"\nThere is no player with the selected PlayerId. You have still {Client.GetInstance.ActivePlayer.Resources[resourceType]} {resourceType}");
+                Console.WriteLine($"\nThere is no player with the selected PlayerId. You still have {Client.GetInstance.ActivePlayer.Resources[resourceType]} {resourceType}");
                 await Task.Delay(4000);
             }
             else
