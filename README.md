@@ -11,6 +11,10 @@
 
 ---
 ### How to run:
+- Build the project:
+  ```
+  dotnet build YourSolution.sln
+  ```
 
 ## Client:
 
