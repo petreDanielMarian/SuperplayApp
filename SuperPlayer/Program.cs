@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Polly.Retry;
+using Serilog;
 using SuperPlayer;
 using System.Net.WebSockets;
 
@@ -24,7 +25,8 @@ public class Program
         }
         finally
         {
-            await client.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            //await client.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            Console.WriteLine("No server was found.");
             client.WebSocket.Dispose();
         }
     }
