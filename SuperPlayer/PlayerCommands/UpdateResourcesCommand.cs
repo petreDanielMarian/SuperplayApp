@@ -8,7 +8,7 @@ using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    public class UpdateResourcesCommand(long clientId) : IPlayerCommand
+    public class UpdateResourcesCommand() : IPlayerCommand
     {
         public async Task Execute(WebSocket webSocket)
         {
@@ -53,7 +53,7 @@ namespace SuperPlayer.PlayerCommands
 
             } while (!int.TryParse(input, out amount));
 
-            var request = new UpdateResourcesRequest(clientId, Client.GetInstance.ActivePlayer.Id, (int)resourceType, amount).ToString();
+            var request = new UpdateResourcesRequest(Client.GetInstance.ActivePlayer.Id, (int)resourceType, amount).ToString();
             Log.Information(request);
 
             return request;

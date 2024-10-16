@@ -69,7 +69,7 @@ namespace SuperPlayer
                 {
                     await Task.Delay(4000);
                     CommandType commandType = GetCommandType();
-                    IPlayerCommand playerCommand = new PlayerCommandFactory(_clientId).GetCommand(commandType);
+                    IPlayerCommand playerCommand = new PlayerCommandFactory().GetCommand(commandType);
 
                     Log.Information($"executing commandType: {commandType}");
 

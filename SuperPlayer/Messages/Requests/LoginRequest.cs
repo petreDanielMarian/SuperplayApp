@@ -2,11 +2,11 @@
 
 namespace SuperPlayer.Messages.Requests
 {
-    public class LoginRequest(long uuid)
+    public class LoginRequest(int udid)
     {
         public override string ToString()
         {
-            return $"{(int)CommandType.Login} {uuid} {uuid}";
+            return $"{(int)CommandType.Login} {udid}";
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    public class LoginCommand(long clientId) : IPlayerCommand
+    public class LoginCommand() : IPlayerCommand
     {
         public async Task Execute(WebSocket webSocket)
         {
@@ -25,7 +25,16 @@ namespace SuperPlayer.PlayerCommands
 
         private string ComputePayloadData()
         {
-            var request = new LoginRequest(clientId).ToString();
+            string input;
+            int udid;
+
+            do
+            {
+                Console.Write("Please enter your UDID (positive integer): ");
+                input = ConsoleHelper.ReadLineSafelyFromConsole();
+            } while (!int.TryParse(input, out udid));
+
+            var request = new LoginRequest(udid).ToString();
             Log.Information(request);
 
             return request;

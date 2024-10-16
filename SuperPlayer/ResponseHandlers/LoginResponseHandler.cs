@@ -1,4 +1,5 @@
-﻿using GameLogic.Model;
+﻿using GameLogic.Extensions;
+using GameLogic.Model;
 using Serilog;
 using SuperPlayer.Interfaces;
 
@@ -10,19 +11,32 @@ namespace SuperPlayer.ResponseHandlers
         {
             Log.Information($"Login response: {response}");
 
-            if (response.Contains('-'))
+            if (response.Equals("0 0 0")) // EmptyPlayer
             {
-                response = response.TrimStart('-');
-                Console.WriteLine($"You are already logged in! Player id: {response}");
-                await Task.Delay(3000);
+                Console.WriteLine($"You cannot login!");
+                await Task.Delay(1500);
             }
             else
             {
-                Console.WriteLine($"Registration done, your player id is {response}");
-                await Task.Delay(3000);
-            }
+                if (response.Split()[0].Equals(Client.GetInstance.ActivePlayer.Id))
+                {
+                    Console.WriteLine("You are logged in already");
+                    await Task.Delay(1500);
+                }
+                else
+                {
+                    Console.WriteLine($"Login done, your player id is {response.Split()[0]}");
+                    await Task.Delay(1500);
+                }
 
-            Client.GetInstance.ActivePlayer = new Player(long.Parse(response));
+                Client.GetInstance.ActivePlayer = ToPlayerDataFromResponse(response);
+            }
+        }
+
+        private static Player ToPlayerDataFromResponse(string resposne)
+        {
+            string[] tokens = resposne.Split();
+            return new Player(long.Parse(tokens[0]), int.Parse(tokens[1]), int.Parse(tokens[2]));
         }
     }
 }

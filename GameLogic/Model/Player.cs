@@ -7,19 +7,19 @@ namespace GameLogic.Model
     /// </summary>
     public class Player
     {
-        public long Id { get; init; }
+        public long Id { get; set; }
         public Dictionary<PlayerResourceType, int> Resources = [];
         public static Player EmptyPlayer => new Player(0);
 
-        public Player(long id)
+        public Player(long id, int coins = 0, int rolls = 0)
         {
             Id = id;
 
             // Initialize resources
             Resources = new Dictionary<PlayerResourceType, int>
             {
-                { PlayerResourceType.Coins, 0 },
-                { PlayerResourceType.Rolls, 0 }
+                { PlayerResourceType.Coins, coins },
+                { PlayerResourceType.Rolls, rolls }
             };
         }
 

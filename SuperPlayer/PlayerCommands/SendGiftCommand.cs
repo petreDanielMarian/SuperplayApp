@@ -8,7 +8,7 @@ using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    public class SendGiftCommand(long clientId) : IPlayerCommand
+    public class SendGiftCommand() : IPlayerCommand
     {
         public async Task Execute(WebSocket webSocket)
         {
@@ -61,7 +61,7 @@ namespace SuperPlayer.PlayerCommands
 
             } while (!TryValidateSentAmount(input, resourceType, out amount));
 
-            var request = new SendGiftRequest(clientId, Client.GetInstance.ActivePlayer.Id, playerId, (int)resourceType, amount).ToString();
+            var request = new SendGiftRequest(Client.GetInstance.ActivePlayer.Id, playerId, (int)resourceType, amount).ToString();
             Log.Information(request);
 
             return request;

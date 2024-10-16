@@ -12,7 +12,7 @@ namespace SuperServer.CommandHandlers
     /// </summary>
     /// <param name="webSocket"></param>
     /// <param name="payload">Contains the client id</param>
-    public class ExitCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
+    public class ExitCommandHandler(WebSocket webSocket, string payload, long clientId) : ICommandHandler
     {
         public async Task Handle()
         {
@@ -22,7 +22,7 @@ namespace SuperServer.CommandHandlers
 
                 await Task.Delay(500);
 
-                Log.Information($"Closing connection with client {payload}");
+                Log.Information($"Closing connection with client {clientId}");
 
                 PlayerRepository.RemoveActivePlayer(long.Parse(payload));
 

@@ -1,6 +1,7 @@
 ﻿using GameLogic.Helpers;
 using GameLogic.Types;
 using Serilog;
+using SuperServer.Database;
 using SuperServer.Factories;
 using SuperServer.Interfaces;
 using SuperServer.Messages.Responses;
@@ -87,27 +88,47 @@ namespace SuperServer
         /// <returns></returns>
         private async Task HandleClientAsync(WebSocket webSocket)
         {
-            await EstablishClientConnectionAsync(webSocket);
-
-            // start exchanging messages
-            while (true)
+            string clientNumber = await EstablishClientConnectionAsync(webSocket);
+            
+            try
             {
-                string response = await TransferDataHelper.RecieveTextOverChannelAsync(webSocket);
+                var clientId = long.Parse(clientNumber);
+                // start exchanging messages
+                while (true)
+                {
+                    string response = await TransferDataHelper.RecieveTextOverChannelAsync(webSocket);
 
-                string[] tokens = response.Split(' ');
-                var commandType = (CommandType)int.Parse(tokens[0]);
-                var clientId = tokens[1];
-                var payload = string.Join(" ", tokens.Skip(2));
+                    string[] tokens = response.Split(' ');
+                    var commandType = (CommandType)int.Parse(tokens[0]);
+                    var payload = string.Join(" ", tokens.Skip(1));
 
-                ICommandHandler handler = new CommandHandlerFactory(webSocket, payload).GetCommandHandler(commandType);
+                    ICommandHandler handler = new CommandHandlerFactory(webSocket, payload, clientId).GetCommandHandler(commandType);
 
-                Log.Information($"Recived and handling {commandType} from client {clientId}");
+                    Log.Information($"Recived and handling {commandType} from client {clientId}");
 
-                _ = Task.Run(handler.Handle);
+                    _ = Task.Run(handler.Handle);
+                }
+            }
+            catch (WebSocketException ex)
+            {
+                Log.Error($"WebSocket exception: {ex.Message}");
+            }
+            finally
+            {
+                if (webSocket.State != WebSocketState.Closed)
+                {
+                    long playerUdid = ClientIdUdidRepository.GetPlayerUdid(long.Parse(clientNumber));
+                    PlayerRepository.RemoveActivePlayer(playerUdid);
+                    ClientIdUdidRepository.RemoveConnectionMapping(long.Parse(clientNumber));
+
+
+                    Log.Error($"Client disconnected or connection closed unexpectedly from {clientNumber}.");
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Connection closed", CancellationToken.None);
+                }
             }
         }
 
-        private async Task EstablishClientConnectionAsync(WebSocket webSocket)
+        private async Task<string> EstablishClientConnectionAsync(WebSocket webSocket)
         {
             string clientInfo = await TransferDataHelper.RecieveTextOverChannelAsync(webSocket);
 
@@ -132,6 +153,8 @@ namespace SuperServer
 
                 Log.Information($"Connection refused with suspicious client {clientId}");
             }
+
+            return clientId;
         }
 
         private bool IsClientAccepted(string clientId, string encryptedClientId)

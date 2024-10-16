@@ -7,7 +7,7 @@ using System.Net.WebSockets;
 
 namespace SuperPlayer.PlayerCommands
 {
-    class ExitCommand(long clientId) : IPlayerCommand
+    class ExitCommand() : IPlayerCommand
     {
         public async Task Execute(WebSocket webSocket)
         {
@@ -25,7 +25,7 @@ namespace SuperPlayer.PlayerCommands
 
         private string ComputePayloadData()
         {
-            var request = new ExitRequest(clientId).ToString();
+            var request = new ExitRequest(Client.GetInstance.ActivePlayer.Id).ToString();
             Log.Information(request);
 
             return request;

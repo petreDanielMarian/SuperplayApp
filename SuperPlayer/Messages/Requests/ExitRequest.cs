@@ -2,11 +2,11 @@
 
 namespace SuperPlayer.Messages.Requests
 {
-    public class ExitRequest(long clientId)
+    public class ExitRequest(long playerId)
     {
         public override string ToString()
         {
-            return $"{(int)CommandType.Exit} {clientId} {clientId} ";
+            return $"{(int)CommandType.Exit} {playerId} ";
         }
     }
 }

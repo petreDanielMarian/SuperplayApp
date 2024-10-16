@@ -8,14 +8,14 @@ namespace SuperPlayer.Factories
     /// Factory class to get the appropiate command runner
     /// </summary>
     /// <param name="clientId">The client id</param>
-    public class PlayerCommandFactory(long clientId)
+    public class PlayerCommandFactory()
     {
         public IPlayerCommand GetCommand(CommandType commandType) => commandType switch
         {
-            CommandType.Login => new LoginCommand(clientId),
-            CommandType.UpdateResources => new UpdateResourcesCommand(clientId),
-            CommandType.SendGift => new SendGiftCommand(clientId),
-            CommandType.Exit => new ExitCommand(clientId),
+            CommandType.Login => new LoginCommand(),
+            CommandType.UpdateResources => new UpdateResourcesCommand(),
+            CommandType.SendGift => new SendGiftCommand(),
+            CommandType.Exit => new ExitCommand(),
             _ => throw new NotImplementedException("More features to come! Stay tuned!"),
         };
     }

@@ -13,27 +13,42 @@ namespace SuperServer.CommandHandlers
     /// </summary>
     /// <param name="webSocket"></param>
     /// <param name="payload">Contains the client id</param>
-    public class LoginCommandHandler(WebSocket webSocket, string payload) : ICommandHandler
+    public class LoginCommandHandler(WebSocket webSocket, string payload, long clientId) : ICommandHandler
     {
         public async Task Handle()
         {
             var udid = long.Parse(payload);
-            long playerId;
+            long playerId = 0;
+            Player? registeredPlayer = Player.EmptyPlayer;
+
             try
             {
-                if (PlayerRepository.GetAllRegisteredPlayers().TryGetValue(udid, out Player? value))
+                if (PlayerRepository.GetActivePlayerByUdid(udid) != null)
                 {
-                    Log.Information($"Registering client {udid}");
-                    playerId = -value.Id;
+                    Log.Information($"Player already logged in with UDID {udid}");
                 }
                 else
                 {
-                    Log.Information($"Logging client {udid}");
-                    playerId = RandomNumbersPool.GetUniquePlayerId();
-                    PlayerRepository.RegisterPlayer(udid, new PlayerConnection(new Player(playerId), webSocket));
+
+                    if (PlayerRepository.GetAllRegisteredPlayers().TryGetValue(udid, out registeredPlayer))
+                    {
+                        Log.Information("Player already logged in!");
+                    }
+                    else
+                    {
+                        Log.Information($"Logging in player {udid}");
+                        playerId = RandomNumbersPool.GetUniquePlayerId();
+
+                        registeredPlayer = new Player(playerId);
+                        PlayerRepository.RegisterPlayer(udid, registeredPlayer);
+
+                        ClientIdUdidRepository.AddConnectionMapping(clientId, udid);
+                    }
+
+                    PlayerRepository.MarkActivePlayer(udid, new PlayerConnection(registeredPlayer, webSocket));
                 }
 
-                await TransferDataHelper.SendTextOverChannelAsync(webSocket, new LoginResponse(playerId).ToString());
+                await TransferDataHelper.SendTextOverChannelAsync(webSocket, new LoginResponse(registeredPlayer).ToString());
             }
             catch (Exception e)
             {
