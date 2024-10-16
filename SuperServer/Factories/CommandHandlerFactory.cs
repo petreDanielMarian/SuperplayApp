@@ -17,6 +17,7 @@ namespace SuperServer.Factories
             CommandType.UpdateResources => new UpdateResourcesCommandHandler(webSocket, payload),
             CommandType.SendGift => new SendGiftCommandHandler(webSocket, payload),
             CommandType.Exit => new ExitCommandHandler(webSocket, payload, clientId),
+            CommandType.Logout => new LogoutCommandHandler(webSocket, clientId),
             _ => throw new NotImplementedException("More features to come! Stay tuned!"),
         };
     }

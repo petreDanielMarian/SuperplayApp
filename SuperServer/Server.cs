@@ -117,7 +117,7 @@ namespace SuperServer
             {
                 if (webSocket.State != WebSocketState.Closed)
                 {
-                    long playerUdid = ClientIdUdidRepository.GetPlayerUdid(long.Parse(clientNumber));
+                    ClientIdUdidRepository.GetPlayerUdid(long.Parse(clientNumber), out long playerUdid);
                     PlayerRepository.RemoveActivePlayer(playerUdid);
                     ClientIdUdidRepository.RemoveConnectionMapping(long.Parse(clientNumber));
 

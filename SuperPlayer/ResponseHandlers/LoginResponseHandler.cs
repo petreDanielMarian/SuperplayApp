@@ -1,5 +1,4 @@
-﻿using GameLogic.Extensions;
-using GameLogic.Model;
+﻿using GameLogic.Model;
 using Serilog;
 using SuperPlayer.Interfaces;
 

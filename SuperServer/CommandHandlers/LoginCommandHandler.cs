@@ -32,19 +32,18 @@ namespace SuperServer.CommandHandlers
 
                     if (PlayerRepository.GetAllRegisteredPlayers().TryGetValue(udid, out registeredPlayer))
                     {
-                        Log.Information("Player already logged in!");
+                        Log.Information("Player registered... logging in!");
                     }
                     else
                     {
-                        Log.Information($"Logging in player {udid}");
+                        Log.Information($"Registering player {udid}");
                         playerId = RandomNumbersPool.GetUniquePlayerId();
 
                         registeredPlayer = new Player(playerId);
                         PlayerRepository.RegisterPlayer(udid, registeredPlayer);
-
-                        ClientIdUdidRepository.AddConnectionMapping(clientId, udid);
                     }
 
+                    ClientIdUdidRepository.AddConnectionMapping(clientId, udid);
                     PlayerRepository.MarkActivePlayer(udid, new PlayerConnection(registeredPlayer, webSocket));
                 }
 

@@ -9,6 +9,7 @@
         Login = 1,
         UpdateResources = 2,
         SendGift = 3,
-        Exit = 4
+        Exit = 4,
+        Logout = 5
     }
 }

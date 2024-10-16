@@ -35,6 +35,7 @@ namespace GameLogic.Extensions
         public static CommandType ToSupportedCommand(this string input) => input.ToLowerInvariant() switch
         {
             "l" => CommandType.Login,
+            "o" => CommandType.Logout,
             "u" => CommandType.UpdateResources,
             "s" => CommandType.SendGift,
             "e" => CommandType.Exit,

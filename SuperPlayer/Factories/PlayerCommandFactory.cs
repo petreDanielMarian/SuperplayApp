@@ -16,6 +16,7 @@ namespace SuperPlayer.Factories
             CommandType.UpdateResources => new UpdateResourcesCommand(),
             CommandType.SendGift => new SendGiftCommand(),
             CommandType.Exit => new ExitCommand(),
+            CommandType.Logout => new LogoutCommand(),
             _ => throw new NotImplementedException("More features to come! Stay tuned!"),
         };
     }

@@ -2,11 +2,11 @@
 
 namespace SuperPlayer.Messages.Requests
 {
-    public class LoginRequest(long udid)
+    internal class LogoutRequest()
     {
         public override string ToString()
         {
-            return $"{(int)CommandType.Login} {udid}";
+            return $"{(int)CommandType.Logout}";
         }
     }
 }

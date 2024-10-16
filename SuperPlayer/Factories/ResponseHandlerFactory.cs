@@ -17,6 +17,7 @@ namespace SuperPlayer.Factories
             CommandType.UpdateResources => new UpdateResourcesResponseHandler(),
             CommandType.SendGift => new SendGiftResponseHandler(),
             CommandType.Exit => new ExitResponseHandler(webSocket),
+            CommandType.Logout => new LogoutResponseHandler(),
             _ => throw new NotImplementedException("Response is not supported!"),
         };
     }

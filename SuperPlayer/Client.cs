@@ -67,7 +67,7 @@ namespace SuperPlayer
             {
                 try
                 {
-                    await Task.Delay(4000);
+                    await Task.Delay(3000);
                     CommandType commandType = GetCommandType();
                     IPlayerCommand playerCommand = new PlayerCommandFactory().GetCommand(commandType);
 
@@ -124,7 +124,7 @@ namespace SuperPlayer
                     Console.WriteLine($"Player's Rolls: {ActivePlayer.Resources[PlayerResourceType.Rolls]}");
                 }
 
-                Console.WriteLine($"\nChoose your next action.\n(L)ogin{alreadyLoggedIn}\n(U)pdate Resource\n(S)end Gift\n(E)xit\n");
+                Console.WriteLine($"\nChoose your next action.\n(L)ogin{alreadyLoggedIn}\n(U)pdate Resource\n(S)end Gift\nLog(o)ut\n(E)xit\n");
                 Console.Write("Type only the letter inside the paranthesis: ");
                 input = ConsoleHelper.ReadFromConsoleExternal();
             }
